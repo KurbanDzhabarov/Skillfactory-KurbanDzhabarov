@@ -46,7 +46,7 @@ def get_result(): # Получить текущий результат игры.
 # Основная программа
 game_over = False
 player1 = True
-
+counter = 0
 while game_over == False:
 
     # 1. Показываем карту
@@ -56,9 +56,11 @@ while game_over == False:
     if player1 == True:
         symbol = "X"
         step = int(input("Человек 1, ваш ход: "))
+        counter += 1
     else:
         symbol = "O"
         step = int(input("Человек 2, ваш ход: "))
+        counter += 1
 
     step_maps(step, symbol)  # делаем ход в указанную ячейку
     win = get_result()  # определим победителя
@@ -66,6 +68,9 @@ while game_over == False:
         game_over = True
     else:
         game_over = False
+    if counter == 9 and win not in ["X", "O"]:
+        game_over = True
+        win = "Ничья!"
 
     player1 = not (player1)
 
