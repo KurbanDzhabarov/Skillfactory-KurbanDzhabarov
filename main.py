@@ -1,79 +1,68 @@
-# карта
-maps = [1,2,3,
-        4,5,6,
-        7,8,9,]
+# колличество клеток
+board_size = 3
+# игровое поле
+board = [1,2,3,
+         4,5,6,
+         7,8,9]
 
-# победные линии
-victories = [[0,1,2],
-             [3,4,5],
-             [6,7,8],
-             [0,3,6],
-             [1,4,7],
-             [2,5,8],
-             [0,4,8],
-             [2,4,6]]
+def draw_board():
+    """Выводим игровое поле"""
+    print("_" * 4 * board_size)
+    for i in range(board_size):
+        print((" " * 3 + "|")*3)
+        print('', board[i*3], "|", board[1 + i*3], "|", board[2 + i*3], "|")
+        print(("_" * 3 + "|") * 3)
+def game_step(index, char):
+    """Выполняем ход"""
+    if index > 9 or board[index-1] in ["X", "O"]:
+        return False
+    board[index - 1] = char
+    return True
+def check_win():
+    win = False
 
-def print_maps(): # функция выводит карту на экран
-    print(maps[0], end = " ")
-    print(maps[1], end=" ")
-    print(maps[2])
-
-    print(maps[3], end=" ")
-    print(maps[4], end=" ")
-    print(maps[5])
-
-    print(maps[6], end=" ")
-    print(maps[7], end=" ")
-    print(maps[8])
-
-def step_maps(step,symbol): # функция хода в ячейку(step), symbol(X или O)
-    ind = maps.index(step)
-    maps[ind] = symbol
-
-
-def get_result(): # Получить текущий результат игры. Эта функция вернет «X» в случае победы крестиков и «O» в случае победы ноликов.
-    win = ""
-
-    for i in victories:
-        if maps[i[0]] == "X" and maps[i[1]] == "X" and maps[i[2]] == "X":
-            win = "X"
-        if maps[i[0]] == "O" and maps[i[1]] == "O" and maps[i[2]] == "O":
-            win = "O"
-
+    win_combination = (
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),
+    (0, 4, 8), (2, 4, 6)
+    )
+    for pos in win_combination:
+        if board[pos[0]] == board[pos[1]] and board[pos[1]] == board[pos[2]]:
+            win = board[pos[0]]
     return win
 
+def start_game():
+    draw_board()
+    # текущий игрок
+    current_player = "X"
+    # номер шага
+    step = 1
 
-# Основная программа
-game_over = False
-player1 = True
-counter = 0
-while game_over == False:
+    while (step < 10) and (check_win() == False):
 
-    # 1. Показываем карту
-    print_maps()
+        index = input(f"Ходит игрок {current_player}. Введите номер поля (0 - выход из игры):")
+        if index == "0":
+            print("Вы завершили игру!")
+            break
 
-    # 2. Спросим у играющего куда делать ход
-    if player1 == True:
-        symbol = "X"
-        step = int(input("Человек 1, ваш ход: "))
-        counter += 1
-    else:
-        symbol = "O"
-        step = int(input("Человек 2, ваш ход: "))
-        counter += 1
+        # если получилось сделать шаг
+        if game_step(int(index), current_player):
+            draw_board()
+            print("Удачный ход")
+            if current_player == "X":
+                current_player = "O"
+            else:
+                current_player = "X"
+            step += 1
 
-    step_maps(step, symbol)  # делаем ход в указанную ячейку
-    win = get_result()  # определим победителя
-    if win != "":
-        game_over = True
-    else:
-        game_over = False
-    if counter == 9 and win not in ["X", "O"]:
-        game_over = True
-        win = "Ничья!"
+        else:
+            print("Неверный номер, повторите!")
+    if step > 9 and index != "0":
+        print("Игра окончена, ничья!")
+    elif 1 <= step <= 8 and index != "0":
+        print("Выиграл " + (check_win()))
 
-    player1 = not (player1)
 
-# Игра окончена. Покажем карту. Объявим победителя.
-print_maps()
-print("Победил", win)
+print("Добро пожаловать в крестики-нолики!")
+
+start_game()
